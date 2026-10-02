@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suibi Blog - Earth, Peace & Life</title>
+<style>
+  /* Arcana 风格设计令牌 */
+  :root{
+    --bg:#f7f7f7;--fg:#474747;--fg-light:#999;--border:#e0e0e0;
+    --accent:#37c0fb;--accent-hover:#50c8fc;--accent-active:#1eb8fb;
+    --dark:#333;--banner-strip:rgba(27,27,27,.78)
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Source Sans Pro',-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+    background:var(--bg);color:var(--fg);line-height:1.75;font-size:15px;font-weight:300}
+  h1,h2,h3,h4{font-weight:600;letter-spacing:-.025em;color:inherit}
+  p{margin:0 0 1.5em}
+  a{color:var(--fg);text-decoration:none;border-bottom:1px dotted var(--fg-light);transition:color .2s,border-bottom-color .2s}
+  a:hover{color:var(--accent);border-bottom-color:transparent}
+  .container{max-width:1080px;margin:0 auto;padding:0 2em}
+  .muted{color:var(--fg-light);font-size:.85em;margin:0 0 .5em}
+  em{font-style:italic}
+
+  /* 按钮 */
+  .button{display:inline-block;background-color:var(--accent);
+    background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.15));
+    border:0;border-radius:5px;color:#fff;cursor:pointer;padding:0 1.5em;
+    line-height:2.75em;min-width:9em;text-align:center;text-decoration:none;
+    font-weight:600;letter-spacing:-.025em;border-bottom:0;
+    transition:background-color .2s ease-in-out,color .2s ease-in-out}
+  .button:hover{background-color:var(--accent-hover);color:#fff!important}
+  .button:active{background-color:var(--accent-active);color:#fff}
+
+  /* 顶部 Logo 区 */
+  #header{text-align:center;padding:3em 0 0;background:#fff;
+    background-image:linear-gradient(to bottom,rgba(0,0,0,.05),rgba(0,0,0,0) 5em)}
+  #header h1 a{font-size:1.5em;letter-spacing:-.025em;border-bottom:0;font-weight:600}
+  #header h1 em{color:var(--fg-light);font-weight:300}
+
+  /* 导航 */
+  #nav{cursor:default;background-color:var(--dark);
+    background-image:linear-gradient(to bottom,rgba(0,0,0,0),rgba(0,0,0,.3))}
+  #nav:after{content:'';display:block;width:100%;height:.75em;background-color:var(--accent)}
+  #nav ul{list-style:none;text-align:center}
+  #nav>ul>li{position:relative;display:inline-block;margin-left:1em}
+  #nav>ul>li a,#nav>ul>li button{color:#c0c0c0;display:block;padding:1.4em .5em 1.25em;border-bottom:0;
+    background:none;border:0;font:inherit;cursor:pointer;letter-spacing:-.025em}
+  #nav>ul>li:first-child{margin-left:0}
+  #nav>ul>li:hover a,#nav>ul>li:hover button{color:#fff}
+  #nav>ul>li.current{font-weight:600}
+  #nav>ul>li.current a{color:#fff}
+  #nav>ul>li.current:before{content:'';position:absolute;bottom:.15em;left:50%;
+    width:.7em;height:.7em;margin-left:-.35em;background-color:var(--accent);transform:rotateZ(45deg)}
+
+  /* Banner：深空 + 太阳系动画 */
+  #banner{position:relative;height:460px;text-align:center;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 42%,#18213a 0%,#0b0f1a 72%);user-select:none}
+  #banner canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+  #banner canvas.dragging{cursor:grabbing}
+  #banner .tag-top{position:absolute;left:16px;top:14px;font-size:12px;color:rgba(255,255,255,.38);
+    letter-spacing:.08em;pointer-events:none;z-index:3}
+  #banner .hint{position:absolute;left:16px;top:34px;font-size:12px;color:rgba(255,255,255,.30);pointer-events:none;z-index:3}
+  #banner .info{position:absolute;right:12px;bottom:6em;width:250px;padding:12px 14px;z-index:4;
+    background:rgba(15,20,36,.94);border:1px solid #2a3554;border-radius:8px;font-size:13px;
+    line-height:1.65;display:none;text-align:left;color:#d6dce8;font-weight:300}
+  #banner .info h3{margin:0;font-size:15px;color:#fff}
+  #banner .info .tag{color:var(--accent);font-size:12px;margin:2px 0 6px}
+  #banner .info button{position:absolute;top:4px;right:8px;border:0;background:none;cursor:pointer;
+    color:var(--fg-light);font-size:16px;line-height:1}
+  #banner>header{position:absolute;bottom:0;left:0;width:100%;z-index:2;
+    background:var(--banner-strip);color:#fff;padding:1.5em 0}
+  #banner>header h2{display:inline-block;vertical-align:middle;font-size:1.25em;margin:0;font-weight:600}
+  #banner>header h2 em{opacity:.75;font-weight:300}
+  #banner>header .button{vertical-align:middle;margin-left:1em;border-bottom:0}
+
+  /* 分区容器 */
+  .wrapper{padding:4.5em 0 3.5em}
+  .wrapper.style1{background:#fff}
+  .wrapper.style2{background:#fff;
+    background-image:linear-gradient(to bottom,rgba(0,0,0,.045),rgba(0,0,0,0) 5em),
+      linear-gradient(to top,rgba(0,0,0,.045),rgba(0,0,0,0) 5em)}
+  .wrapper.style3{background-color:var(--accent);
+    background-image:linear-gradient(to bottom,rgba(0,0,0,0),rgba(0,0,0,.15));color:#fff}
+  .wrapper.style3 .button{background:#fff;color:var(--fg);border-bottom:0}
+  .wrapper.style3 .button:hover{color:var(--accent)!important}
+
+  header.major{text-align:center;margin-bottom:3em}
+  header.major h2{font-size:2em;margin-bottom:.35em}
+  header.major p{color:var(--fg-light);font-style:italic;margin:0}
+
+  /* 三栏亮点 */
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5em}
+  .box.highlight{text-align:center}
+  .box.highlight .icon{color:var(--accent);margin-bottom:1em}
+  .box.highlight .icon svg{width:2.75em;height:2.75em;stroke:currentColor;fill:none;stroke-width:1.6;
+    stroke-linecap:round;stroke-linejoin:round}
+  .box.highlight h3{font-size:1.15em;margin-bottom:.6em}
+  .box.highlight p{color:var(--fg);margin:0}
+
+  /* 文章卡片 */
+  .posts-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5em 3em}
+  .box.post{display:flex;gap:1.5em;align-items:flex-start}
+  .box.post .image{width:30%;flex:none;border:1px solid var(--border);border-radius:5px;overflow:hidden;line-height:0}
+  .box.post .image svg{display:block;width:100%;height:auto}
+  .box.post .inner{flex:1;min-width:0}
+  .box.post h3{font-size:1.1em;margin-bottom:.25em}
+  .box.post h3 a{border-bottom:0}
+  .box.post p:last-child{margin:0}
+
+  /* CTA */
+  #cta{text-align:center;padding:3.5em 0}
+  #cta h2{display:inline-block;vertical-align:middle;margin:0;font-size:1.4em}
+  #cta .button{vertical-align:middle;margin-left:1.25em}
+
+  /* 页脚 */
+  #footer{padding:3.5em 0 4em;text-align:center}
+  #footer .links{list-style:none;margin-bottom:2em}
+  #footer .links li{display:inline-block;margin:0 1em}
+  #footer .copyright{color:var(--fg-light);font-size:.9em}
+
+  @media (max-width:900px){
+    .row{grid-template-columns:1fr;max-width:420px;margin:0 auto}
+    .posts-grid{grid-template-columns:1fr}
+  }
+  @media (max-width:640px){
+    .container{padding:0 1.25em}
+    #banner{height:380px}
+    #banner>header h2{display:block;margin-bottom:1em}
+    #banner>header .button{margin-left:0}
+    .box.post{flex-direction:column}
+    .box.post .image{width:100%}
+  }
+</style>
+</head>
+<body id="top">
+
+<!-- 顶部 Logo -->
+<div id="header">
+  <h1><a href="#top" id="logo">Suibi Blog <em data-en="· Be kind to Earth, cherish peace" data-zh="· 善待地球，珍惜和平">· Be kind to Earth, cherish peace</em></a></h1>
+</div>
+
+<!-- 导航 -->
+<nav id="nav">
+  <ul>
+    <li class="current"><a href="#top" data-en="Home" data-zh="首页">Home</a></li>
+    <li><a href="#earth" data-en="Protect Earth" data-zh="保护地球">Protect Earth</a></li>
+    <li><a href="#peace" data-en="Cherish Peace" data-zh="珍惜和平">Cherish Peace</a></li>
+    <li><a href="#posts" data-en="Essays" data-zh="生活随笔">Essays</a></li>
+    <li><a href="#cta" data-en="About" data-zh="关于">About</a></li>
+    <li><button id="langToggle" title="Switch language">中文</button></li>
+  </ul>
+</nav>
+
+<!-- Banner：太阳系 -->
+<section id="banner">
+  <canvas id="cv"></canvas>
+  <span class="tag-top" data-en="SOLAR SYSTEM · ONE EARTH" data-zh="SOLAR SYSTEM · 同一个地球">SOLAR SYSTEM · ONE EARTH</span>
+  <span class="hint" data-en="Drag to rotate · Scroll to zoom · Drag a planet to slide it · Click for details" data-zh="拖拽旋转 · 滚轮缩放 · 按住星球拨针 · 点按看详情">Drag to rotate · Scroll to zoom · Drag a planet to slide it · Click for details</span>
+  <div class="info" id="info"><button id="infoClose" aria-label="Close">×</button><h3 id="infoName"></h3><div class="tag" id="infoType"></div><div id="infoText"></div></div>
+  <header>
+    <h2><span data-en="One Earth, " data-zh="同一个地球，">One Earth, </span><em data-en="our only home" data-zh="我们唯一的家园">our only home</em></h2>
+    <a href="#posts" class="button" data-en="Protect It" data-zh="守护它">Protect It</a>
+  </header>
+</section>
+
+<!-- 三栏亮点 -->
+<section class="wrapper style1" id="earth">
+  <div class="container">
+    <div class="row">
+      <section class="box highlight">
+        <div class="icon"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><ellipse cx="24" cy="24" rx="8" ry="18"/><path d="M6.5 18h35M6.5 30h35"/></svg></div>
+        <h3 data-en="Protect the Earth" data-zh="保护地球">Protect the Earth</h3>
+        <p data-en="One fewer pair of disposable chopsticks, one fewer plastic bag — multiplied by eight billion, that is a revolution. Environmentalism lives in everyday choices, not slogans." data-zh="少一双一次性筷子、少一个塑料袋，乘以八十亿就是一场变革。环保不在口号里，在每一天的选择里。">One fewer pair of disposable chopsticks, one fewer plastic bag — multiplied by eight billion, that is a revolution. Environmentalism lives in everyday choices, not slogans.</p>
+      </section>
+      <section class="box highlight">
+        <div class="icon"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><path d="M24 6v36M24 24L10.6 38.5M24 24l13.4 14.5"/></svg></div>
+        <h3 data-en="Cherish Peace" data-zh="珍惜和平">Cherish Peace</h3>
+        <p data-en="Peace is never guaranteed; it must be guarded, generation after generation, gently and firmly. May swords be beaten into plowshares." data-zh="和平不是理所当然，它需要一代代人温柔而坚定地守护。愿枪炮入库，铸剑为犁。">Peace is never guaranteed; it must be guarded, generation after generation, gently and firmly. May swords be beaten into plowshares.</p>
+      </section>
+      <section class="box highlight">
+        <div class="icon"><svg viewBox="0 0 48 48"><path d="M24 41S6 29.5 6 17.8C6 11.3 11.2 7 16.6 7c3.4 0 6 1.6 7.4 4 1.4-2.4 4-4 7.4-4C36.8 7 42 11.3 42 17.8 42 29.5 24 41 24 41z"/></svg></div>
+        <h3 data-en="Live Gently" data-zh="温柔生活">Live Gently</h3>
+        <p data-en="From every meal to every plant, live each day with care and softness — the simplest kindness to the Earth and to each other." data-zh="从一餐一饭到一草一木，把日子过得认真而柔软——这是对地球与彼此最朴素的善意。">From every meal to every plant, live each day with care and softness — the simplest kindness to the Earth and to each other.</p>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- 大标题区 -->
+<section class="wrapper style2" id="peace">
+  <div class="container">
+    <header class="major">
+      <h2 data-en="One Planet, One Home" data-zh="同一颗星球，同一个家园">One Planet, One Home</h2>
+      <p data-en="May peace shine like starlight through every window" data-zh="愿和平如星光，照进每一扇窗">May peace shine like starlight through every window</p>
+    </header>
+  </div>
+</section>
+
+<!-- 文章 -->
+<section class="wrapper style1" id="posts">
+  <div class="container">
+    <div class="posts-grid">
+
+      <section class="box post">
+        <a href="#" class="image" aria-hidden="true">
+          <svg viewBox="0 0 240 150"><rect width="240" height="150" fill="#eaf6fd"/><circle cx="120" cy="75" r="46" fill="#4f8fd9"/><path d="M96 58c10-6 20-2 24 6s-4 14-12 12-16-12-12-18zM132 84c8-4 18 0 18 8s-10 12-18 8-8-12 0-16z" fill="#57b86a"/><ellipse cx="120" cy="75" rx="60" ry="18" fill="none" stroke="#37c0fb" stroke-width="2" opacity=".5"/></svg>
+        </a>
+        <div class="inner">
+          <h3><a href="#" data-en="Only One Earth: It Starts with a Pair of Chopsticks" data-zh="只有一个地球：从一双筷子说起">Only One Earth: It Starts with a Pair of Chopsticks</a></h3>
+          <p class="muted">2026-10-01</p>
+          <p data-en="One fewer pair of disposable chopsticks, one fewer plastic bag — small things, multiplied by eight billion, become a transformation. Environmentalism is not a grand slogan but the choice of every day, every meal..." data-zh="少一双一次性筷子、少一个塑料袋，看似微小，乘以八十亿就是一场变革。环保从来不是宏大的口号，而是每一天、每一餐的选择……">One fewer pair of disposable chopsticks, one fewer plastic bag — small things, multiplied by eight billion, become a transformation. Environmentalism is not a grand slogan but the choice of every day, every meal...</p>
+        </div>
+      </section>
+
+      <section class="box post">
+        <a href="#" class="image" aria-hidden="true">
+          <svg viewBox="0 0 240 150"><rect width="240" height="150" fill="#e8f6fe"/><path d="M70 95l45-32 42 14-40 10z" fill="#fff" stroke="#9db8c8" stroke-width="2"/><path d="M115 63l42 14-22 24z" fill="#f2f9ff" stroke="#9db8c8" stroke-width="2"/><path d="M157 77c14-10 28-8 34 2-10 6-24 6-34-2z" fill="#dff1fb" stroke="#9db8c8" stroke-width="2"/></svg>
+        </a>
+        <div class="inner">
+          <h3><a href="#" data-en="World Peace Day: Folding Paper Cranes with My Kid" data-zh="世界和平日：和孩子一起折千纸鹤">World Peace Day: Folding Paper Cranes with My Kid</a></h3>
+          <p class="muted">2026-09-21</p>
+          <p data-en="Paper cranes don't fly far, but wishes do. When telling my child about the war years, I'd rather talk about those who planted flowers again on the ruins — peace must be guarded, generation after generation..." data-zh="千纸鹤飞不远，但心意可以。给孩子讲那段战争岁月时，我更愿意讲那些在废墟上重新种花的人——和平需要一代代人守护……">Paper cranes don't fly far, but wishes do. When telling my child about the war years, I'd rather talk about those who planted flowers again on the ruins — peace must be guarded, generation after generation...</p>
+        </div>
+      </section>
+
+      <section class="box post">
+        <a href="#" class="image" aria-hidden="true">
+          <svg viewBox="0 0 240 150"><rect width="240" height="150" fill="#f7f1e3"/><path d="M60 118c8-18 34-26 60-26s52 8 60 26z" fill="#8a6242"/><path d="M120 96V62" stroke="#4c8a3f" stroke-width="4" stroke-linecap="round"/><path d="M120 72c-2-12-12-18-24-16 2 12 12 18 24 16zM120 80c2-12 12-18 24-16-2 12-12 18-24 16z" fill="#57b86a"/></svg>
+        </a>
+        <div class="inner">
+          <h3><a href="#" data-en="Home Composting Diary: Returning Scraps to the Soil" data-zh="家庭堆肥日记：让厨余回到土地">Home Composting Diary: Returning Scraps to the Soil</a></h3>
+          <p class="muted">2026-08-05</p>
+          <p data-en="One balcony compost bin, three months, and fruit peels turned into black-gold humus. The soil feeds us, so we should return the nutrients to it — the plainest cycle, the gentlest gratitude..." data-zh="一个阳台堆肥箱，三个月，果皮菜叶变成了黑金般的腐殖土。土地给予我们粮食，我们理应把养分还给它……">One balcony compost bin, three months, and fruit peels turned into black-gold humus. The soil feeds us, so we should return the nutrients to it — the plainest cycle, the gentlest gratitude...</p>
+        </div>
+      </section>
+
+      <section class="box post">
+        <a href="#" class="image" aria-hidden="true">
+          <svg viewBox="0 0 240 150"><rect width="240" height="150" fill="#eef7ea"/><path d="M70 112C96 86 128 62 172 46" stroke="#6faa3f" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="104" cy="88" rx="16" ry="7" transform="rotate(-38 104 88)" fill="#7fbf54"/><ellipse cx="128" cy="70" rx="16" ry="7" transform="rotate(-142 128 70)" fill="#6faa3f"/><ellipse cx="146" cy="56" rx="15" ry="6.5" transform="rotate(-30 146 56)" fill="#7fbf54"/><ellipse cx="166" cy="44" rx="14" ry="6" transform="rotate(-146 166 44)" fill="#6faa3f"/></svg>
+        </a>
+        <div class="inner">
+          <h3><a href="#" data-en="Grandpa's Old Army Uniform" data-zh="爷爷的旧军装">Grandpa's Old Army Uniform</a></h3>
+          <p class="muted">2026-06-15</p>
+          <p data-en="The old uniform lies at the bottom of the chest; Grandpa never spoke of those years. Only much later did I hear him say: in wartime, what he longed for most was a bowl of hot rice and a safe bed..." data-zh="旧军装压在箱底，爷爷从不主动提起那些年。直到很晚我才听他说过一句：打仗那几年，最想的是一碗热饭和一张安稳的床……">The old uniform lies at the bottom of the chest; Grandpa never spoke of those years. Only much later did I hear him say: in wartime, what he longed for most was a bowl of hot rice and a safe bed...</p>
+        </div>
+      </section>
+
+      <section class="box post">
+        <a href="#" class="image" aria-hidden="true">
+          <svg viewBox="0 0 240 150"><rect width="240" height="150" fill="#18213a"/><circle cx="120" cy="78" r="30" fill="#4f8fd9"/><ellipse cx="120" cy="78" rx="52" ry="13" fill="none" stroke="#e3c88f" stroke-width="3" transform="rotate(-14 120 78)"/><circle cx="52" cy="38" r="1.6" fill="#cdd6e6"/><circle cx="190" cy="30" r="1.3" fill="#cdd6e6"/><circle cx="206" cy="92" r="1.6" fill="#cdd6e6"/><circle cx="36" cy="106" r="1.2" fill="#cdd6e6"/><circle cx="150" cy="20" r="1.1" fill="#cdd6e6"/></svg>
+        </a>
+        <div class="inner">
+          <h3><a href="#" data-en="Looking Up: Earth Is Our Only Home" data-zh="仰望星空：地球是我们唯一的家园">Looking Up: Earth Is Our Only Home</a></h3>
+          <p class="muted">2026-05-22</p>
+          <p data-en="Two hundred lines of code to draw a solar system — the one at the top of this page. At cosmic scale Earth is a mote of dust, yet all our history, love and war happened on its surface. Be kind to it, and to each other..." data-zh="两百行代码画一个太阳系——就是页顶那个。在宇宙尺度里它只是一粒微尘，我们全部的历史、爱与战争都发生在它的表面。善待它，也善待彼此……">Two hundred lines of code to draw a solar system — the one at the top of this page. At cosmic scale Earth is a mote of dust, yet all our history, love and war happened on its surface. Be kind to it, and to each other...</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="wrapper style3" id="cta">
+  <div class="container">
+    <h2 data-en="Be kind to the Earth, and to each other." data-zh="善待地球，也善待彼此。">Be kind to the Earth, and to each other.</h2>
+    <a href="#top" class="button" data-en="Back to Top" data-zh="回到顶部">Back to Top</a>
+  </div>
+</section>
+
+<!-- 页脚 -->
+<div id="footer">
+  <div class="container">
+    <ul class="links">
+      <li><a href="#earth" data-en="Protect Earth" data-zh="保护地球">Protect Earth</a></li>
+      <li><a href="#peace" data-en="Cherish Peace" data-zh="珍惜和平">Cherish Peace</a></li>
+      <li><a href="#posts" data-en="Essays" data-zh="生活随笔">Essays</a></li>
+    </ul>
+    <div class="copyright" data-en="© 2026 Suibi Blog · Be kind to Earth, cherish peace" data-zh="© 2026 随笔小站 · 善待地球，珍惜和平">© 2026 Suibi Blog · Be kind to Earth, cherish peace</div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var TAU=Math.PI*2;
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+
+/* ============ 双语：默认英语，可切换中文 ============ */
+var TITLES={en:'Suibi Blog - Earth, Peace & Life',zh:'随笔小站 - 地球、和平与生活'};
+var lang='en';
+try{lang=localStorage.getItem('lang')==='zh'?'zh':'en'}catch(e){}
+function applyLang(){
+  document.documentElement.lang=lang==='en'?'en':'zh-CN';
+  document.title=TITLES[lang];
+  var nodes=document.querySelectorAll('[data-en]');
+  for(var i=0;i<nodes.length;i++){
+    var el=nodes[i];
+    el.textContent=(lang==='en')?el.getAttribute('data-en'):el.getAttribute('data-zh');
+  }
+  document.getElementById('langToggle').textContent=(lang==='en')?'中文':'English';
+}
+document.getElementById('langToggle').addEventListener('click',function(){
+  lang=(lang==='en')?'zh':'en';
+  try{localStorage.setItem('lang',lang)}catch(e){}
+  applyLang();
+  hideInfo(); /* 切换语言时关闭信息卡，避免残留旧语言文案 */
+});
+applyLang();
+
+var canvas=document.getElementById('cv');
+var ctx=canvas.getContext('2d');
+var infoEl=document.getElementById('info');
+
+var W=0,H=0;
+function resize(){
+  var dpr=Math.min(window.devicePixelRatio||1,2);
+  var r=canvas.getBoundingClientRect();
+  W=r.width;H=r.height;
+  canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+resize();
+window.addEventListener('resize',resize);
+
+/* 星空背景（分数坐标，缩放窗口不重生成） */
+var stars=[];
+for(var i=0;i<170;i++)stars.push({x:Math.random(),y:Math.random(),s:Math.random()*1.3+.3,p:Math.random()*TAU,v:.5+Math.random()*1.5});
+
+/* 天体：name/nameEn 中英名，type/typeEn 中英类别，info/infoEn 中英详情
+   r=轨道半径 size=显示半径 speed=角速度(压缩开普勒比) incl=轨道倾角 */
+var BODIES=[
+ {name:'太阳',nameEn:'Sun',type:'恒星 · G2V',typeEn:'Star · G2V',r:0,size:22,speed:0,angle:0,color:'#ffca66',core:'#fff4c8',
+  info:'太阳系的中心恒星，占整个系统质量的 99.86%，每秒把约 400 万吨物质转化为能量。',
+  infoEn:'The central star of the solar system, holding 99.86% of its total mass and converting about 4 million tons of matter into energy every second.'},
+ {name:'水星',nameEn:'Mercury',type:'类地行星',typeEn:'Terrestrial planet',r:62,size:4,speed:1.59,angle:0.5,color:'#b9b1a7',dark:'#46423c',
+  info:'距太阳最近的行星，昼夜温差超过 600℃，表面布满与月球相似的环形山。',
+  infoEn:'The closest planet to the Sun, with day-night temperature swings over 600°C and a surface covered in Moon-like craters.'},
+ {name:'金星',nameEn:'Venus',type:'类地行星',typeEn:'Terrestrial planet',r:86,size:6.5,speed:1.17,angle:2.2,color:'#e8c47e',dark:'#5c4a26',
+  info:'被浓硫酸云层覆盖，温室效应使表面温度高达约 465℃，是太阳系最热的行星。',
+  infoEn:'Wrapped in thick sulfuric-acid clouds; a runaway greenhouse effect keeps the surface near 465°C — the hottest planet in the solar system.'},
+ {name:'地球',nameEn:'Earth',type:'类地行星 · 唯一家园',typeEn:'Terrestrial planet · Our only home',r:112,size:7,speed:1.0,angle:4.2,color:'#4f8fd9',dark:'#1d3a5c',
+  info:'直径 12742 km，已知唯一孕育生命的星球。在宇宙尺度里它只是一粒微尘，却是我们全部的过去与未来——善待它，也善待彼此。按住它可以在轨道上"手动拨针"。',
+  infoEn:'12,742 km across, the only known world that harbors life. In cosmic terms it is a speck of dust, yet it holds all our past and future — be kind to it, and to each other. Drag it to slide along its orbit.'},
+ {name:'火星',nameEn:'Mars',type:'类地行星',typeEn:'Terrestrial planet',r:140,size:5,speed:0.81,angle:5.6,color:'#d96f45',dark:'#57291a',
+  info:'太阳系最高火山奥林帕斯山的所在地，自转一周的时长与地球几乎相同。',
+  infoEn:'Home to Olympus Mons, the tallest volcano in the solar system; its day is nearly the same length as Earth\'s.'},
+ {name:'木星',nameEn:'Jupiter',type:'气态巨行星',typeEn:'Gas giant',r:178,size:15,speed:0.44,angle:1.2,color:'#d9a566',dark:'#57401f',
+  info:'太阳系最大的行星，质量是其他七颗行星总和的 2.5 倍，大红斑是持续数百年的风暴。',
+  infoEn:'The largest planet — 2.5 times the mass of all other planets combined. The Great Red Spot is a storm that has raged for centuries.'},
+ {name:'土星',nameEn:'Saturn',type:'气态巨行星',typeEn:'Gas giant',r:220,size:12,speed:0.32,angle:3.4,ring:true,color:'#e3c88f',dark:'#5e5227',
+  info:'光环由无数冰粒与碎石组成，直径超过 27 万公里，平均厚度却只有几十米。',
+  infoEn:'Its rings are made of countless ice grains and rock fragments — over 270,000 km wide, yet only tens of meters thick on average.'},
+ {name:'海王星',nameEn:'Neptune',type:'冰质巨行星',typeEn:'Ice giant',r:262,size:9,speed:0.18,angle:0.2,incl:0.03,color:'#4f6fe6',dark:'#1b2a63',
+  info:'先被数学计算"笔尖上发现"再被观测证实，风速可达 2100 km/h，为太阳系之最。',
+  infoEn:'Found by mathematics "at the tip of a pen" before telescopes confirmed it; winds reach 2,100 km/h, the fastest in the solar system.'},
+ {name:'冥王星',nameEn:'Pluto',type:'矮行星',typeEn:'Dwarf planet',r:298,size:3.6,speed:0.12,angle:2.8,incl:0.18,color:'#c9bca9',dark:'#4e463b',
+  info:'2006 年被重新归类为矮行星，轨道倾角与偏心率都明显异于八大行星。',
+  infoEn:'Reclassified as a dwarf planet in 2006; its orbit is notably tilted and eccentric compared with the eight planets.'}
+];
+var earth=BODIES[3];
+var MOON={name:'月球',nameEn:'Moon',type:'天然卫星',typeEn:'Natural satellite',orbit:15,size:2.4,speed:3.3,angle:1.2,color:'#cfd4da',dark:'#43474d',parent:earth,
+  info:'地球唯一的天然卫星，正以每年约 3.8 cm 的速度缓慢远离我们。',
+  infoEn:'Earth\'s only natural satellite, slowly drifting away from us at about 3.8 cm per year.'};
+
+function bodyName(b){return lang==='en'?b.nameEn:b.name}
+function bodyType(b){return lang==='en'?b.typeEn:b.type}
+function bodyInfo(b){return lang==='en'?b.infoEn:b.info}
+
+/* 相机：rot 绕 Y 旋转 / tilt 俯仰 / zoom 缩放，初始按画布尺寸自适应 */
+var cam={rot:-0.55,tilt:0.88,zoom:clamp(Math.min(W/680,H/520),0.45,1.1)};
+
+/* 世界坐标 -> 屏幕坐标（绕 Y 旋转后绕 X 俯仰，正交投影） */
+function project(x,y,z){
+  var cr=Math.cos(cam.rot),sr=Math.sin(cam.rot);
+  var x1=x*cr-z*sr,z1=x*sr+z*cr;
+  var ct=Math.cos(cam.tilt),st=Math.sin(cam.tilt);
+  return{x:W/2+x1*cam.zoom,y:H/2+(y*ct-z1*st)*cam.zoom,z:y*st+z1*ct};
+}
+
+function orbitPoint(b,a){
+  var inc=b.incl||0;
+  return[Math.cos(a)*b.r,Math.sin(a)*Math.sin(inc)*b.r,Math.sin(a)*Math.cos(inc)*b.r];
+}
+
+var last=0;
+function frame(t){
+  var dt=Math.min((t-last)/1000||0,0.05);last=t;
+  ctx.clearRect(0,0,W,H);
+
+  /* 星空闪烁 */
+  ctx.fillStyle='#cdd6e6';
+  for(var i=0;i<stars.length;i++){
+    var s=stars[i];
+    ctx.globalAlpha=.25+.45*(.5+.5*Math.sin(t*.001*s.v+s.p));
+    ctx.fillRect(s.x*W,s.y*H,s.s,s.s);
+  }
+  ctx.globalAlpha=1;
+
+  /* 推进公转 */
+  for(i=0;i<BODIES.length;i++){var b=BODIES[i];b.angle=(b.angle+b.speed*dt*.35)%TAU}
+  MOON.angle=(MOON.angle+MOON.speed*dt*.35)%TAU;
+
+  /* 计算位置 */
+  var sun=project(0,0,0);
+  for(i=0;i<BODIES.length;i++){
+    b=BODIES[i];
+    if(!b.r){b.wx=0;b.wy=0;b.wz=0;b.p=sun;continue}
+    var w=orbitPoint(b,b.angle);
+    b.wx=w[0];b.wy=w[1];b.wz=w[2];
+    b.p=project(b.wx,b.wy,b.wz);
+  }
+  MOON.wx=earth.wx+Math.cos(MOON.angle)*MOON.orbit;
+  MOON.wy=earth.wy;
+  MOON.wz=earth.wz+Math.sin(MOON.angle)*MOON.orbit;
+  MOON.p=project(MOON.wx,MOON.wy,MOON.wz);
+
+  /* 轨道线 */
+  ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(140,160,200,0.14)';
+  for(i=0;i<BODIES.length;i++){
+    b=BODIES[i];
+    if(!b.r)continue;
+    ctx.beginPath();
+    for(var k=0;k<=72;k++){
+      var a=k/72*TAU,q=orbitPoint(b,a),pp=project(q[0],q[1],q[2]);
+      k?ctx.lineTo(pp.x,pp.y):ctx.moveTo(pp.x,pp.y);
+    }
+    ctx.stroke();
+  }
+
+  /* 按深度由远及近绘制 */
+  var list=BODIES.concat([MOON]).sort(function(a,b){return b.p.z-a.p.z});
+  ctx.textAlign='center';
+  for(i=0;i<list.length;i++){
+    b=list[i];
+    var x=b.p.x,y=b.p.y,R=b.size*(0.6+0.4*cam.zoom);
+    b.sx=x;b.sy=y;b.sr=Math.max(R+5,10);
+    if(b.nameEn==='Sun'){
+      var g0=ctx.createRadialGradient(x,y,0,x,y,b.size*3.2);
+      g0.addColorStop(0,'rgba(255,214,120,.9)');
+      g0.addColorStop(.25,'rgba(255,180,80,.35)');
+      g0.addColorStop(1,'rgba(255,160,60,0)');
+      ctx.fillStyle=g0;ctx.beginPath();ctx.arc(x,y,b.size*3.2,0,TAU);ctx.fill();
+      var g1=ctx.createRadialGradient(x-b.size*.2,y-b.size*.2,0,x,y,b.size);
+      g1.addColorStop(0,b.core);g1.addColorStop(1,b.color);
+      ctx.fillStyle=g1;ctx.beginPath();ctx.arc(x,y,b.size,0,TAU);ctx.fill();
+    }else{
+      if(b.ring){ /* 光环远半（画在星球后面） */
+        ctx.strokeStyle='rgba(214,196,150,.55)';ctx.lineWidth=b.size*.22;
+        ctx.beginPath();ctx.ellipse(x,y,b.size*2.1,Math.max(b.size*2.1*Math.sin(cam.tilt)*.42,b.size*.3),0,Math.PI,TAU);ctx.stroke();
+        ctx.lineWidth=1;
+      }
+      /* 亮面朝向太阳（屏幕中心） */
+      var lx=x+(sun.x-x)*.45,ly=y+(sun.y-y)*.45;
+      var g2=ctx.createRadialGradient(lx,ly,R*.15,x,y,R);
+      g2.addColorStop(0,b.color);g2.addColorStop(1,b.dark);
+      ctx.fillStyle=g2;ctx.beginPath();ctx.arc(x,y,R,0,TAU);ctx.fill();
+      if(b.ring){ /* 光环近半（画在星球前面） */
+        ctx.strokeStyle='rgba(224,196,150,.7)';ctx.lineWidth=b.size*.22;
+        ctx.beginPath();ctx.ellipse(x,y,b.size*2.1,Math.max(b.size*2.1*Math.sin(cam.tilt)*.42,b.size*.3),0,0,Math.PI);ctx.stroke();
+        ctx.lineWidth=1;
+      }
+    }
+    if(hover===b){
+      ctx.strokeStyle='rgba(150,190,255,.8)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(x,y,R+4,0,TAU);ctx.stroke();
+      ctx.font='12px "Source Sans Pro","PingFang SC",sans-serif';
+      ctx.fillStyle='#dbe4f5';
+      ctx.fillText(bodyName(b),x,y-R-8);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* 交互：拖拽旋转 / 拨针 / 缩放 / 点按详情 */
+var hover=null,drag=null,pinchD=0;
+var pts=new Map();
+function pick(mx,my){
+  var best=null,bd=1e9;
+  var all=BODIES.concat([MOON]);
+  for(var i=0;i<all.length;i++){
+    var b=all[i];
+    if(b.sx===undefined)continue;
+    var d=Math.hypot(mx-b.sx,my-b.sy);
+    if(d<b.sr&&d<bd){bd=d;best=b}
+  }
+  return best;
+}
+function evPos(e){var r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+
+canvas.addEventListener('pointerdown',function(e){
+  canvas.setPointerCapture(e.pointerId);
+  var p=evPos(e);pts.set(e.pointerId,p);
+  if(pts.size===2){
+    var v=[...pts.values()];
+    pinchD=Math.hypot(v[0].x-v[1].x,v[0].y-v[1].y);
+    drag=null;return;
+  }
+  var b=pick(p.x,p.y);
+  drag={x:p.x,y:p.y,body:(b&&b.nameEn!=='Sun')?b:null,moved:false};
+  canvas.classList.add('dragging');
+});
+canvas.addEventListener('pointermove',function(e){
+  var p=evPos(e);
+  if(pts.has(e.pointerId))pts.set(e.pointerId,p);
+  if(pts.size===2){ /* 双指捏合缩放 */
+    var v=[...pts.values()];
+    var d=Math.hypot(v[0].x-v[1].x,v[0].y-v[1].y);
+    if(pinchD>0)cam.zoom=clamp(cam.zoom*d/pinchD,0.4,3);
+    pinchD=d;return;
+  }
+  if(drag){
+    var dx=p.x-drag.x,dy=p.y-drag.y;
+    if(Math.abs(dx)+Math.abs(dy)>2)drag.moved=true;
+    if(drag.body)drag.body.angle=(drag.body.angle+dx*0.012)%TAU; /* 沿轨道拨针 */
+    else{cam.rot+=dx*0.005;cam.tilt=clamp(cam.tilt+dy*0.004,0.18,1.45)}
+    drag.x=p.x;drag.y=p.y;
+  }else{
+    hover=pick(p.x,p.y);
+    canvas.style.cursor=hover?'pointer':'grab';
+  }
+});
+function endPointer(e){
+  pts.delete(e.pointerId);
+  if(pts.size<2)pinchD=0;
+  if(drag){
+    if(!drag.moved){
+      var p=evPos(e),b=pick(p.x,p.y);
+      if(b)showInfo(b);else hideInfo();
+    }
+    drag=null;
+    canvas.classList.remove('dragging');
+  }
+}
+canvas.addEventListener('pointerup',endPointer);
+canvas.addEventListener('pointercancel',function(e){
+  pts.delete(e.pointerId);pinchD=0;drag=null;
+  canvas.classList.remove('dragging');
+});
+canvas.addEventListener('wheel',function(e){
+  e.preventDefault();
+  cam.zoom=clamp(cam.zoom*Math.exp(-e.deltaY*0.0012),0.4,3);
+},{passive:false});
+
+function showInfo(b){
+  document.getElementById('infoName').textContent=bodyName(b);
+  document.getElementById('infoType').textContent=bodyType(b);
+  document.getElementById('infoText').textContent=bodyInfo(b);
+  infoEl.style.display='block';
+}
+function hideInfo(){infoEl.style.display='none'}
+document.getElementById('infoClose').addEventListener('click',hideInfo);
+})();
+</script>
+</body>
+</html>

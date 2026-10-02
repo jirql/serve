@@ -1,0 +1,106 @@
+{
+  "log": {
+    "loglevel": "info"
+  },
+  "inbounds": [
+    {
+      "tag": "socks",
+      "port": 11080,
+      "protocol": "socks",
+      "listen": "127.0.0.1",
+      "settings": {
+        "udp": true
+      }
+    },
+    {
+      "tag": "http",
+      "port": 11081,
+      "protocol": "http",
+      "listen": "127.0.0.1"
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "poxy-vless",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "YOUR_CF_WORKER_DOMAIN",
+            "port": 443,
+            "users": [
+              {
+                "id": "YOUR_UUID",
+                "encryption": "none",
+                "level": 0
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "YOUR_CF_WORKER_DOMAIN"
+        },
+        "wsSettings": {
+          "path": "/YOUR_WSPATH",
+          "host": "YOUR_CF_WORKER_DOMAIN"
+        }
+      }
+    },
+    {
+      "tag": "poxy-trojan",
+      "protocol": "trojan",
+      "settings": {
+        "servers": [
+          {
+            "address": "YOUR_CF_WORKER_DOMAIN",
+            "port": 443,
+            "password": "YOUR_UUID"
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "YOUR_CF_WORKER_DOMAIN"
+        },
+        "wsSettings": {
+          "path": "/YOUR_WSPATH",
+          "host": "YOUR_CF_WORKER_DOMAIN"
+        }
+      }
+    },
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {}
+    }
+  ],
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "type": "field",
+        "outboundTag": "direct",
+        "network": "tcp,udp",
+        "ip": [
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "127.0.0.0/8"
+        ]
+      },
+      {
+        "type": "field",
+        "outboundTag": "direct",
+        "domain": [
+          "keyword:YOUR_CF_WORKER_DOMAIN"
+        ]
+      }
+    ]
+  }
+}

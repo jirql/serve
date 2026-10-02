@@ -1,0 +1,18 @@
+# 构建上下文排除——仅保留 index.js / index.html / package*.json / Dockerfile
+node_modules
+.git
+.env
+.env.*
+*.local
+client
+worker
+test-*.js
+MAINTENANCE.md
+README.md
+vercel.json
+.dockerignore
+docker-compose.yml
+.github
+*.deb
+index.d.ts
+WELCOME.md

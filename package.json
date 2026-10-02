@@ -1,0 +1,20 @@
+{
+  "name": "www",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Proxy node (VLESS/Trojan over WS), obfuscated-build deploy artifacts, refactored from vvxw/deploy-vercel",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "obfuscate": "javascript-obfuscator src/index.plain.js --output index.js --compact true --string-array false --identifier-names-generator hexadecimal --rename-globals false --control-flow-flattening false && javascript-obfuscator src/worker.plain.js --output worker/_worker.js --compact true --string-array false --identifier-names-generator hexadecimal --rename-globals false --control-flow-flattening false --module true"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.1.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

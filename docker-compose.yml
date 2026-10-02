@@ -1,0 +1,26 @@
+# poxy 容器编排 —— 目标云平台（非 Vercel）+ Cloudflare 反代
+#
+# 凭据全部由本目录的 .env 注入（与 index.js 的 env 读取一致）。
+# 部署后把 CF 反代域名填入 DOMAIN 与客户端 config 的 address/host/sni 三处。
+#
+# 启动：docker compose --profile www up -d
+
+services:
+  poxy:
+    image: ghcr.io/jirql/eooce:latest
+    container_name: www
+    profiles: ["www"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      PORT: "3000"
+    restart: unless-stopped
+    # 节点仅读 index.html，可只读根文件系统加固
+    read_only: true
+    tmpfs:
+      - /tmp

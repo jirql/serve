@@ -1,0 +1,11 @@
+# 凭据文件绝不入库（client/xray-config.json 已含真实 UUID，仓库务必保持 private）
+.env
+.env.*
+*.local
+
+# 明文源码（混淆产物方案保留本地）
+src/
+
+# 构建/运行产物
+node_modules/
+*.log
